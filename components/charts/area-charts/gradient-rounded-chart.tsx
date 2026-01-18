@@ -1,8 +1,7 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
-import { Badge } from "@/components/ui/badge";
+
 import {
   Card,
   CardContent,
@@ -11,11 +10,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  type ChartConfig,
+  ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Badge } from "@/components/ui/badge";
+import { TrendingDown } from "lucide-react";
 
 const chartData = [
   { month: "January", desktop: 342, mobile: 245 },
@@ -43,18 +44,18 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function GradientAreaChart() {
+export function GradientRoundedAreaChart() {
   return (
     <Card>
       <CardHeader>
         <CardTitle>
-          Area Chart
+          Rounded Area Chart
           <Badge
-            className="ml-2 border-none bg-green-500/10 text-green-500"
             variant="outline"
+            className="text-red-500 bg-red-500/10 border-none ml-2"
           >
-            <TrendingUp className="h-4 w-4" />
-            <span>5.2%</span>
+            <TrendingDown className="h-4 w-4" />
+            <span>-5.2%</span>
           </Badge>
         </CardTitle>
         <CardDescription>
@@ -64,21 +65,21 @@ export function GradientAreaChart() {
       <CardContent>
         <ChartContainer config={chartConfig}>
           <AreaChart accessibilityLayer data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <CartesianGrid vertical={false} strokeDasharray="3 3" />
             <XAxis
-              axisLine={false}
               dataKey="month"
-              tickFormatter={(value) => value.slice(0, 3)}
               tickLine={false}
+              axisLine={false}
               tickMargin={8}
+              tickFormatter={(value) => value.slice(0, 3)}
             />
-            <ChartTooltip content={<ChartTooltipContent />} cursor={false} />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             <defs>
               <linearGradient
-                id="gradient-chart-desktop"
+                id="gradient-rounded-chart-desktop"
                 x1="0"
-                x2="0"
                 y1="0"
+                x2="0"
                 y2="1"
               >
                 <stop
@@ -93,10 +94,10 @@ export function GradientAreaChart() {
                 />
               </linearGradient>
               <linearGradient
-                id="gradient-chart-mobile"
+                id="gradient-rounded-chart-mobile"
                 x1="0"
-                x2="0"
                 y1="0"
+                x2="0"
                 y2="1"
               >
                 <stop
@@ -113,21 +114,23 @@ export function GradientAreaChart() {
             </defs>
             <Area
               dataKey="mobile"
-              fill="url(#gradient-chart-mobile)"
+              type="natural"
+              fill="url(#gradient-rounded-chart-mobile)"
               fillOpacity={0.4}
-              stackId="a"
               stroke="var(--color-mobile)"
-              strokeDasharray={"3 3"}
+              stackId="a"
               strokeWidth={0.8}
+              strokeDasharray={"3 3"}
             />
             <Area
               dataKey="desktop"
-              fill="url(#gradient-chart-desktop)"
+              type="natural"
+              fill="url(#gradient-rounded-chart-desktop)"
               fillOpacity={0.4}
-              stackId="a"
               stroke="var(--color-desktop)"
-              strokeDasharray={"3 3"}
+              stackId="a"
               strokeWidth={0.8}
+              strokeDasharray={"3 3"}
             />
           </AreaChart>
         </ChartContainer>

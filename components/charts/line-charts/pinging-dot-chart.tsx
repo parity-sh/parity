@@ -1,8 +1,7 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
-import { Badge } from "@/components/ui/badge";
+
 import {
   Card,
   CardContent,
@@ -11,11 +10,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  type ChartConfig,
+  ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Badge } from "@/components/ui/badge";
+import { TrendingUp } from "lucide-react";
 
 const chartData = [
   { month: "January", desktop: 186 },
@@ -40,8 +41,8 @@ export function PingingDotChart() {
         <CardTitle>
           Pinging Dot Chart
           <Badge
-            className="ml-2 border-none bg-green-500/10 text-green-500"
             variant="outline"
+            className="text-green-500 bg-green-500/10 border-none ml-2"
           >
             <TrendingUp className="h-4 w-4" />
             <span>5.2%</span>
@@ -61,22 +62,22 @@ export function PingingDotChart() {
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              axisLine={false}
               dataKey="month"
-              tickFormatter={(value) => value.slice(0, 3)}
               tickLine={false}
+              axisLine={false}
               tickMargin={8}
+              tickFormatter={(value) => value.slice(0, 3)}
             />
             <ChartTooltip
-              content={<ChartTooltipContent hideLabel />}
               cursor={false}
+              content={<ChartTooltipContent hideLabel />}
             />
             <Line
               dataKey="desktop"
-              dot={<CustomizedDot />}
+              type="linear"
               stroke="var(--color-desktop)"
               strokeDasharray="4 4"
-              type="linear"
+              dot={<CustomizedDot />}
             />
           </LineChart>
         </ChartContainer>
@@ -91,28 +92,28 @@ const CustomizedDot = (props: React.SVGProps<SVGCircleElement>) => {
   return (
     <g>
       {/* Main dot */}
-      <circle cx={cx} cy={cy} fill={stroke} r={3} />
+      <circle cx={cx} cy={cy} r={3} fill={stroke} />
       {/* Ping animation circles */}
       <circle
         cx={cx}
         cy={cy}
-        fill="none"
-        opacity="0.8"
         r={3}
         stroke={stroke}
+        fill="none"
         strokeWidth="1"
+        opacity="0.8"
       >
         <animate
           attributeName="r"
+          values="3;10"
           dur="1s"
           repeatCount="indefinite"
-          values="3;10"
         />
         <animate
           attributeName="opacity"
+          values="0.8;0"
           dur="1s"
           repeatCount="indefinite"
-          values="0.8;0"
         />
       </circle>
     </g>
