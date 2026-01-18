@@ -3,6 +3,7 @@
 import { TrendDownIcon, TrendUpIcon } from "@phosphor-icons/react";
 
 const DEMO_COINS = [
+  { symbol: "DATABUDDY", price: 0.003_21, change: 18.4, featured: true },
   { symbol: "DOGE", price: 0.002_34, change: 12.5 },
   { symbol: "PEPE", price: 0.000_89, change: -4.2 },
   { symbol: "BONK", price: 0.001_56, change: 8.7 },
@@ -17,16 +18,22 @@ function CoinItem({
   symbol,
   price,
   change,
+  featured,
 }: {
   symbol: string;
   price: number;
   change: number;
+  featured?: boolean;
 }) {
   const isPositive = change >= 0;
 
   return (
     <div className="flex shrink-0 items-center gap-3 px-4">
-      <span className="font-medium font-mono text-sm">{symbol}</span>
+      <span
+        className={`font-medium font-mono text-sm ${featured ? "text-primary" : ""}`}
+      >
+        ${symbol}
+      </span>
       <span className="font-mono text-muted-foreground text-xs">
         {price.toFixed(5)} SOL
       </span>

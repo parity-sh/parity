@@ -234,116 +234,156 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Example Launch Card */}
+      {/* Featured Token */}
       <div className="mb-10">
-        <h2 className="mb-4 font-semibold text-base tracking-tight">
-          Data Visibility
-        </h2>
-        <div className="max-w-sm border border-border">
-          <div className="border-border border-b p-4">
-            <div className="mb-2 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <CoinsIcon className="size-4 text-muted-foreground" />
-                <span className="font-medium text-sm">Example Token</span>
-                <VerifiedBadge />
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="font-semibold text-base tracking-tight">
+            Platform Token
+          </h2>
+          <Badge className="border-primary text-primary" variant="outline">
+            $DATABUDDY
+          </Badge>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="border border-border p-4">
+            <div className="mb-3 flex items-center gap-2">
+              <div className="flex size-8 items-center justify-center bg-primary">
+                <CoinsIcon
+                  className="size-4 text-primary-foreground"
+                  weight="bold"
+                />
               </div>
-              <Badge className="border-primary text-primary" variant="outline">
-                Live
-              </Badge>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-sm">$DATABUDDY</span>
+                  <VerifiedBadge />
+                </div>
+                <p className="text-muted-foreground text-xs">Platform Token</p>
+              </div>
             </div>
-            <p className="text-muted-foreground text-xs">
-              All fees are visible. Nothing is hidden.
-            </p>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Contract</span>
+                <a
+                  className="font-mono text-primary text-xs hover:underline"
+                  href="https://solscan.io/token/9XzKDJ9wP9yqi9G5okp9UFNxFuhqyk5GNyUnnBaRBAGS"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  9XzKDJ...BAGS
+                </a>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Network</span>
+                <span className="font-mono text-xs">Solana</span>
+              </div>
+            </div>
           </div>
-          <div className="space-y-3 p-4">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Total Supply</span>
-              <span className="font-mono">1,000,000,000</span>
+          <div className="border border-border p-4">
+            <div className="mb-2 text-muted-foreground text-xs uppercase tracking-wider">
+              Fee Transparency
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Current Price</span>
-              <span className="font-mono">0.00000142 SOL</span>
-            </div>
-            <div className="border-border border-t pt-3">
-              <div className="mb-2 text-muted-foreground text-xs uppercase tracking-wider">
-                Fee Breakdown
+            <p className="mb-3 text-muted-foreground text-sm">
+              All fees are visible on-chain. Nothing is hidden behind tooltips
+              or fine print.
+            </p>
+            <div className="grid grid-cols-4 gap-2 text-center">
+              <div>
+                <div className="font-mono text-primary text-xs">15%</div>
+                <div className="text-[10px] text-muted-foreground">
+                  Platform
+                </div>
               </div>
-              <div className="grid grid-cols-4 gap-2 text-center">
-                <div>
-                  <div className="font-mono text-primary text-xs">15%</div>
-                  <div className="text-[10px] text-muted-foreground">
-                    Platform
-                  </div>
-                </div>
-                <div>
-                  <div className="font-mono text-primary text-xs">30%</div>
-                  <div className="text-[10px] text-muted-foreground">
-                    Meteora
-                  </div>
-                </div>
-                <div>
-                  <div className="font-mono text-primary text-xs">25%</div>
-                  <div className="text-[10px] text-muted-foreground">
-                    Creator
-                  </div>
-                </div>
-                <div>
-                  <div className="font-mono text-primary text-xs">30%</div>
-                  <div className="text-[10px] text-muted-foreground">
-                    Charity
-                  </div>
-                </div>
+              <div>
+                <div className="font-mono text-primary text-xs">30%</div>
+                <div className="text-[10px] text-muted-foreground">Meteora</div>
+              </div>
+              <div>
+                <div className="font-mono text-primary text-xs">25%</div>
+                <div className="text-[10px] text-muted-foreground">Creator</div>
+              </div>
+              <div>
+                <div className="font-mono text-primary text-xs">30%</div>
+                <div className="text-[10px] text-muted-foreground">Charity</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Trust Signals */}
+      {/* What Parity Controls */}
       <div className="mb-10">
         <h2 className="mb-4 font-semibold text-base tracking-tight">
-          Trust Signals
+          What We Control
         </h2>
         <div className="grid gap-4 md:grid-cols-3">
           <div className="border border-border p-4">
-            <div className="mb-2 text-muted-foreground text-xs">Program ID</div>
-            <div className="break-all font-mono text-xs">
-              PrtyXy1H8JvU9DmBvJqAhRFfY1cQHQqVe7uxHMPHJNk
+            <div className="mb-2 text-muted-foreground text-xs">
+              Fee Routing
             </div>
+            <p className="text-sm">
+              Parity enforces the 15/30/25/30 split. Fees are routed
+              transparently to platform, Meteora, creator, and charity.
+            </p>
           </div>
           <div className="border border-border p-4">
             <div className="mb-2 text-muted-foreground text-xs">
-              Audit Status
+              Creator Verification
             </div>
-            <div className="flex items-center gap-2">
+            <p className="text-sm">
+              We verify creator identity before launch. KYC status is visible on
+              every token.
+            </p>
+          </div>
+          <div className="border border-border p-4">
+            <div className="mb-2 text-muted-foreground text-xs">
+              Charity Enforcement
+            </div>
+            <p className="text-sm">
+              30% to charity is structural, not optional. Charity wallets are
+              verified and public.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Powered by Meteora */}
+      <div className="mb-10 border border-border p-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <div className="mb-1 flex items-center gap-2">
+              <span className="font-semibold text-sm">Powered by Meteora</span>
               <VerifiedBadge />
-              <span className="text-sm">Audited by OtterSec</span>
             </div>
+            <p className="max-w-md text-muted-foreground text-sm">
+              Token creation, bonding curves, and liquidity are handled by
+              Meteora&apos;s audited on-chain programs. We don&apos;t deploy our
+              own smart contracts.
+            </p>
           </div>
-          <div className="border border-border p-4">
-            <div className="mb-2 text-muted-foreground text-xs">
-              Source Code
-            </div>
-            <a
-              className="flex items-center gap-1 text-primary text-sm hover:underline"
-              href="https://github.com/parity-labs/parity"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              View on GitHub
-              <ArrowSquareOutIcon className="size-3" />
-            </a>
-          </div>
+          <a
+            className="flex shrink-0 items-center gap-2 border border-border px-4 py-2 text-sm transition-colors hover:bg-muted"
+            href="https://meteora.ag"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Learn about Meteora
+            <ArrowSquareOutIcon className="size-3.5" />
+          </a>
         </div>
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between border-border border-t pt-6 text-muted-foreground text-xs">
+      <div className="flex flex-col gap-4 border-border border-t pt-6 text-muted-foreground text-xs md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-2">
           <SquareHalfIcon className="size-4" weight="bold" />
           <span>Open. Transparent. Fair.</span>
         </div>
-        <div>Built on Solana</div>
+        <div className="flex items-center gap-4">
+          <span>Built on Solana</span>
+          <span className="text-muted-foreground/50">·</span>
+          <span>Infrastructure by Meteora</span>
+        </div>
       </div>
     </div>
   );
