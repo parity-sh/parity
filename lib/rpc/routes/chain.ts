@@ -1,12 +1,11 @@
-import { os } from "@orpc/server";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { z } from "zod";
 import { getConnection } from "@/lib/solana";
+import { publicProcedure } from "../procedures";
 
-export const chainRouter = os.router({
-  status: os.handler(async () => {
+export const chainRouter = {
+  status: publicProcedure.handler(async () => {
     const connection = getConnection();
-
     const [slot, blockHeight, epochInfo, version] = await Promise.all([
       connection.getSlot(),
       connection.getBlockHeight(),
@@ -25,7 +24,7 @@ export const chainRouter = os.router({
     };
   }),
 
-  supply: os.handler(async () => {
+  supply: publicProcedure.handler(async () => {
     const connection = getConnection();
     const supply = await connection.getSupply();
 
@@ -36,7 +35,7 @@ export const chainRouter = os.router({
     };
   }),
 
-  balance: os
+  balance: publicProcedure
     .input(z.object({ address: z.string() }))
     .handler(async ({ input }) => {
       const connection = getConnection();
@@ -49,4 +48,4 @@ export const chainRouter = os.router({
         sol: balance / LAMPORTS_PER_SOL,
       };
     }),
-});
+};

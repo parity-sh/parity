@@ -1,5 +1,12 @@
 import { relations } from "drizzle-orm";
-import { boolean, index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  index,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -73,11 +80,6 @@ export const verification = pgTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)]
 );
 
-export const userRelations = relations(user, ({ many }) => ({
-  sessions: many(session),
-  accounts: many(account),
-}));
-
 export const sessionRelations = relations(session, ({ one }) => ({
   user: one(user, {
     fields: [session.userId],
@@ -90,4 +92,56 @@ export const accountRelations = relations(account, ({ one }) => ({
     fields: [account.userId],
     references: [user.id],
   }),
+}));
+
+export const curvePresetEnum = pgEnum("curve_preset", [
+  "community",
+  "standard",
+  "scarce",
+]);
+
+export const launchStatusEnum = pgEnum("launch_status", [
+  "pending",
+  "active",
+  "migrated",
+  "failed",
+]);
+
+export const launch = pgTable(
+  "launch",
+  {
+    id: text("id").primaryKey(),
+    creatorId: text("creator_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    curvePreset: curvePresetEnum("curve_preset").notNull(),
+    poolAddress: text("pool_address"),
+    tokenMint: text("token_mint"),
+    name: text("name").notNull(),
+    symbol: text("symbol").notNull(),
+    description: text("description"),
+    image: text("image"),
+    charityWallet: text("charity_wallet").notNull(),
+    charityName: text("charity_name"),
+    status: launchStatusEnum("status").default("pending").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    migratedAt: timestamp("migrated_at"),
+  },
+  (table) => [
+    index("launch_creatorId_idx").on(table.creatorId),
+    index("launch_status_idx").on(table.status),
+  ]
+);
+
+export const launchRelations = relations(launch, ({ one }) => ({
+  creator: one(user, {
+    fields: [launch.creatorId],
+    references: [user.id],
+  }),
+}));
+
+export const userRelations = relations(user, ({ many }) => ({
+  sessions: many(session),
+  accounts: many(account),
+  launches: many(launch),
 }));
