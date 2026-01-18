@@ -1,9 +1,15 @@
 "use client";
 
-import { InfoIcon, RocketIcon, WarningIcon } from "@phosphor-icons/react";
+import {
+  InfoIcon,
+  LockSimpleIcon,
+  RocketIcon,
+  WarningIcon,
+} from "@phosphor-icons/react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useSession } from "@/lib/auth-client";
 import { rpc } from "@/lib/rpc/client";
 
 const CURVE_OPTIONS = [
@@ -76,6 +82,9 @@ function FieldError({ error }: { error?: string }) {
 
 export default function CreatePage() {
   const router = useRouter();
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
+
   const [form, setForm] = useState({
     name: "",
     symbol: "",
@@ -328,11 +337,22 @@ export default function CreatePage() {
 
         <button
           className="flex h-12 w-full items-center justify-center gap-2 bg-primary font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-          disabled={createMutation.isPending}
+          disabled={!isAuthenticated || createMutation.isPending}
           type="submit"
         >
-          <RocketIcon className="size-5" weight="bold" />
-          {createMutation.isPending ? "Creating..." : "Create Launch"}
+          {!isAuthenticated && (
+            <>
+              <LockSimpleIcon className="size-5" weight="bold" />
+              Sign in to create
+            </>
+          )}
+          {isAuthenticated && createMutation.isPending && "Creating..."}
+          {isAuthenticated && !createMutation.isPending && (
+            <>
+              <RocketIcon className="size-5" weight="bold" />
+              Create Launch
+            </>
+          )}
         </button>
       </form>
     </div>
