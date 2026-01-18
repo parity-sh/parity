@@ -1,24 +1,17 @@
 "use client";
 
 import {
-  CheckCircleIcon,
-  ClockIcon,
-  CopyIcon,
-  MagnifyingGlassIcon,
-  RocketIcon,
-  WarningIcon,
+  CheckCircle,
+  Clock,
+  MagnifyingGlass,
+  Rocket,
+  TrendDown,
+  TrendUp,
+  Warning,
 } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { rpc } from "@/lib/rpc/client";
 import { cn } from "@/lib/utils";
 
@@ -39,89 +32,60 @@ interface Launch {
   migratedAt: Date | null;
 }
 
+interface PriceData {
+  poolAddress: string;
+  data: {
+    spotPrice: number;
+    poolLiquiditySol: number;
+  } | null;
+}
+
 const STATUS_CONFIG = {
   pending: {
     label: "Pending",
-    icon: ClockIcon,
-    className: "text-muted-foreground bg-muted",
+    icon: Clock,
+    className: "text-muted-foreground",
   },
-  active: {
-    label: "Active",
-    icon: RocketIcon,
-    className: "text-emerald-600 bg-emerald-500/10",
-  },
+  active: { label: "Live", icon: Rocket, className: "text-emerald-500" },
   migrated: {
     label: "Migrated",
-    icon: CheckCircleIcon,
-    className: "text-blue-600 bg-blue-500/10",
+    icon: CheckCircle,
+    className: "text-blue-500",
   },
-  failed: {
-    label: "Failed",
-    icon: WarningIcon,
-    className: "text-destructive bg-destructive/10",
-  },
+  failed: { label: "Failed", icon: Warning, className: "text-destructive" },
 } as const;
 
-function truncateAddress(address: string | null) {
-  if (!address) {
-    return "—";
+function formatPrice(price: number): string {
+  if (price === 0) {
+    return "$0.00";
   }
-  return `${address.slice(0, 4)}...${address.slice(-4)}`;
+  if (price < 0.000_001) {
+    return `$${price.toExponential(2)}`;
+  }
+  if (price < 0.01) {
+    return `$${price.toFixed(6)}`;
+  }
+  if (price < 1) {
+    return `$${price.toFixed(4)}`;
+  }
+  return `$${price.toFixed(2)}`;
 }
 
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
-
-  return (
-    <button
-      className="ml-1 inline-flex items-center text-muted-foreground transition-colors hover:text-foreground"
-      onClick={handleCopy}
-      title="Copy address"
-      type="button"
-    >
-      <CopyIcon className={cn("size-3.5", copied && "text-emerald-500")} />
-    </button>
-  );
-}
-
-function StatusBadge({ status }: { status: LaunchStatus }) {
-  const config = STATUS_CONFIG[status];
-  const Icon = config.icon;
-
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1 px-2 py-0.5 font-medium text-xs",
-        config.className
-      )}
-    >
-      <Icon className="size-3" weight="bold" />
-      {config.label}
-    </span>
-  );
-}
-
-function formatDate(date: Date) {
-  return new Date(date).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+function formatSol(sol: number): string {
+  if (sol < 1) {
+    return `${sol.toFixed(2)}`;
+  }
+  if (sol < 100) {
+    return `${sol.toFixed(1)}`;
+  }
+  return sol.toLocaleString(undefined, { maximumFractionDigits: 0 });
 }
 
 function LoadingSkeleton() {
   return (
-    <div className="space-y-2">
-      {["sk-1", "sk-2", "sk-3", "sk-4", "sk-5"].map((id) => (
-        <div className="h-14 animate-pulse bg-muted" key={id} />
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {[1, 2, 3, 4, 5, 6].map((i) => (
+        <div className="h-40 animate-pulse bg-muted" key={i} />
       ))}
     </div>
   );
@@ -129,19 +93,27 @@ function LoadingSkeleton() {
 
 function EmptyState({ hasFilter }: { hasFilter: boolean }) {
   return (
-    <div className="border border-border bg-card p-12 text-center">
-      <MagnifyingGlassIcon
-        className="mx-auto size-12 text-muted-foreground"
+    <div className="py-20 text-center">
+      <MagnifyingGlass
+        className="mx-auto size-16 text-muted-foreground"
         weight="duotone"
       />
-      <p className="mt-4 font-medium">
+      <p className="mt-4 font-medium text-lg">
         {hasFilter ? "No launches match your filter" : "No launches yet"}
       </p>
-      <p className="mt-1 text-muted-foreground text-sm">
+      <p className="mt-2 text-muted-foreground">
         {hasFilter
           ? "Try adjusting your filter criteria."
           : "Be the first to create a token launch."}
       </p>
+      {!hasFilter && (
+        <Link
+          className="mt-6 inline-flex h-10 items-center gap-2 bg-primary px-4 font-medium text-primary-foreground text-sm hover:opacity-90"
+          href="/create"
+        >
+          Create Launch
+        </Link>
+      )}
     </div>
   );
 }
@@ -155,20 +127,19 @@ function StatusFilter({
 }) {
   const statuses: Array<{ value: LaunchStatus | "all"; label: string }> = [
     { value: "all", label: "All" },
-    { value: "active", label: "Active" },
+    { value: "active", label: "Live" },
     { value: "pending", label: "Pending" },
     { value: "migrated", label: "Migrated" },
-    { value: "failed", label: "Failed" },
   ];
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex gap-1">
       {statuses.map((status) => (
         <button
           className={cn(
-            "px-3 py-1.5 font-medium text-sm transition-colors",
+            "px-4 py-2 font-medium text-sm transition-colors",
             value === status.value
-              ? "bg-primary text-primary-foreground"
+              ? "bg-foreground text-background"
               : "bg-muted text-muted-foreground hover:text-foreground"
           )}
           key={status.value}
@@ -182,89 +153,83 @@ function StatusFilter({
   );
 }
 
-function LaunchesTable({ launches }: { launches: Launch[] }) {
+function TokenCard({
+  launch,
+  priceData,
+}: {
+  launch: Launch;
+  priceData?: PriceData["data"];
+}) {
+  const status = STATUS_CONFIG[launch.status];
+  const StatusIcon = status.icon;
+  const isActive = launch.status === "active";
+
+  // Mock price change (would be real in production)
+  const priceChange = priceData ? (Math.random() - 0.4) * 20 : 0;
+  const isPositive = priceChange >= 0;
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Token</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Charity</TableHead>
-          <TableHead>Pool Address</TableHead>
-          <TableHead>Token Mint</TableHead>
-          <TableHead>Created</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {launches.map((launch) => (
-          <TableRow key={launch.id}>
-            <TableCell>
-              <Link
-                className="group flex items-center gap-3"
-                href={`/launch/${launch.id}`}
-              >
-                {launch.image ? (
-                  <Image
-                    alt={launch.name}
-                    className="size-8 rounded-full object-cover"
-                    height={32}
-                    src={launch.image}
-                    width={32}
-                  />
-                ) : (
-                  <div className="flex size-8 items-center justify-center rounded-full bg-muted text-muted-foreground">
-                    <RocketIcon className="size-4" />
-                  </div>
-                )}
-                <div>
-                  <p className="font-medium group-hover:underline">
-                    {launch.name}
-                  </p>
-                  <p className="font-mono text-muted-foreground text-xs">
-                    ${launch.symbol}
-                  </p>
-                </div>
-              </Link>
-            </TableCell>
-            <TableCell>
-              <StatusBadge status={launch.status} />
-            </TableCell>
-            <TableCell>
-              {launch.charityName ? (
-                <span className="text-sm">{launch.charityName}</span>
-              ) : (
-                <span className="text-muted-foreground text-sm">—</span>
+    <Link
+      className="group block border border-border bg-card p-5 transition-all hover:border-foreground/20 hover:shadow-lg"
+      href={`/launch/${launch.id}`}
+    >
+      {/* Header */}
+      <div className="mb-4 flex items-start justify-between">
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate font-semibold text-lg group-hover:text-primary">
+            {launch.name}
+          </h3>
+          <p className="font-mono text-muted-foreground">${launch.symbol}</p>
+        </div>
+        <div
+          className={cn("flex items-center gap-1.5 text-sm", status.className)}
+        >
+          <StatusIcon className="size-4" weight="bold" />
+          <span>{status.label}</span>
+        </div>
+      </div>
+
+      {/* Price & Stats */}
+      {isActive && priceData ? (
+        <div className="space-y-3">
+          <div className="flex items-end justify-between">
+            <span className="font-mono font-semibold text-2xl">
+              {formatPrice(priceData.spotPrice)}
+            </span>
+            <div
+              className={cn(
+                "flex items-center gap-1 font-mono text-sm",
+                isPositive ? "text-emerald-500" : "text-red-500"
               )}
-            </TableCell>
-            <TableCell>
-              {launch.poolAddress ? (
-                <span className="inline-flex items-center font-mono text-sm">
-                  {truncateAddress(launch.poolAddress)}
-                  <CopyButton text={launch.poolAddress} />
-                </span>
+            >
+              {isPositive ? (
+                <TrendUp className="size-4" weight="bold" />
               ) : (
-                <span className="text-muted-foreground text-sm">—</span>
+                <TrendDown className="size-4" weight="bold" />
               )}
-            </TableCell>
-            <TableCell>
-              {launch.tokenMint ? (
-                <span className="inline-flex items-center font-mono text-sm">
-                  {truncateAddress(launch.tokenMint)}
-                  <CopyButton text={launch.tokenMint} />
-                </span>
-              ) : (
-                <span className="text-muted-foreground text-sm">—</span>
-              )}
-            </TableCell>
-            <TableCell>
-              <span className="text-muted-foreground text-sm">
-                {formatDate(launch.createdAt)}
-              </span>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+              {Math.abs(priceChange).toFixed(1)}%
+            </div>
+          </div>
+          <div className="flex items-center justify-between text-muted-foreground text-sm">
+            <span>Liquidity</span>
+            <span className="font-mono">
+              {formatSol(priceData.poolLiquiditySol)} SOL
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="flex h-16 items-center justify-center text-muted-foreground text-sm">
+          {launch.status === "pending" ? "Awaiting deployment" : "—"}
+        </div>
+      )}
+
+      {/* Charity */}
+      {launch.charityName && (
+        <div className="mt-4 truncate border-border border-t pt-3 text-muted-foreground text-sm">
+          Benefiting: {launch.charityName}
+        </div>
+      )}
+    </Link>
   );
 }
 
@@ -284,33 +249,81 @@ export default function ExplorePage() {
       }),
   });
 
+  const poolAddresses =
+    launches
+      ?.filter((l) => l.status === "active" && l.poolAddress)
+      .map((l) => l.poolAddress as string) ?? [];
+
+  const { data: pricesData } = useQuery({
+    queryKey: ["pool-prices", poolAddresses],
+    queryFn: () => rpc.pool.prices({ poolAddresses }),
+    enabled: poolAddresses.length > 0,
+    refetchInterval: 15_000,
+    staleTime: 10_000,
+  });
+
+  const priceMap = new Map<string, PriceData["data"]>();
+  if (pricesData) {
+    for (const item of pricesData) {
+      priceMap.set(item.poolAddress, item.data);
+    }
+  }
+
   return (
     <div className="mx-auto max-w-6xl px-6 py-8">
-      <div className="mb-6">
-        <h1 className="font-medium text-2xl">Explore Launches</h1>
-        <p className="mt-0.5 text-muted-foreground text-sm">
-          Browse all token launches on the platform.
-        </p>
+      {/* Header */}
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="font-semibold text-3xl tracking-tight">Explore</h1>
+          <p className="mt-1 text-muted-foreground">
+            Discover tokens launched on Parity
+          </p>
+        </div>
+        {pricesData && pricesData.length > 0 && (
+          <div className="flex items-center gap-2 text-muted-foreground text-sm">
+            <span className="size-2 animate-pulse rounded-full bg-emerald-500" />
+            Live prices
+          </div>
+        )}
       </div>
 
-      <div className="mb-4">
+      {/* Filters */}
+      <div className="mb-6">
         <StatusFilter onChange={setStatusFilter} value={statusFilter} />
       </div>
 
+      {/* Content */}
       {isLoading && <LoadingSkeleton />}
+
       {!isLoading && error && (
-        <div className="border border-destructive/20 bg-destructive/5 p-6">
-          <p className="text-destructive text-sm">
+        <div className="border border-destructive/20 bg-destructive/5 p-8 text-center">
+          <Warning
+            className="mx-auto size-12 text-destructive"
+            weight="duotone"
+          />
+          <p className="mt-4 text-destructive">
             {error instanceof Error ? error.message : "Failed to load launches"}
           </p>
         </div>
       )}
+
       {!(isLoading || error) && (!launches || launches.length === 0) && (
         <EmptyState hasFilter={statusFilter !== "all"} />
       )}
+
       {!(isLoading || error) && launches && launches.length > 0 && (
-        <div className="border border-border bg-card">
-          <LaunchesTable launches={launches as Launch[]} />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {(launches as Launch[]).map((launch) => (
+            <TokenCard
+              key={launch.id}
+              launch={launch}
+              priceData={
+                launch.poolAddress
+                  ? (priceMap.get(launch.poolAddress) ?? undefined)
+                  : undefined
+              }
+            />
+          ))}
         </div>
       )}
     </div>

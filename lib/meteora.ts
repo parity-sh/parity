@@ -205,3 +205,87 @@ export async function getSwapQuote(
     return null;
   }
 }
+
+export interface SwapTransactionResult {
+  transaction: string;
+  inAmount: string;
+  outAmount: string;
+  minOutAmount: string;
+}
+
+export async function buildSwapTransaction(params: {
+  poolAddress: string;
+  userPublicKey: string;
+  inAmount: bigint;
+  swapType: "buy" | "sell";
+  slippageBps?: number;
+}): Promise<SwapTransactionResult> {
+  const {
+    poolAddress,
+    userPublicKey,
+    inAmount,
+    swapType,
+    slippageBps = 100,
+  } = params;
+
+  const dbc = getClient();
+  const connection = getConnection();
+  const poolPubkey = new PublicKey(poolAddress);
+  const userPubkey = new PublicKey(userPublicKey);
+
+  const pool = await dbc.state.getPool(poolPubkey);
+  if (!pool) {
+    throw new Error("Pool not found");
+  }
+
+  const config = await dbc.state.getPoolConfig(pool.config);
+  if (!config) {
+    throw new Error("Pool config not found");
+  }
+
+  const currentPoint = await getCurrentPoint(connection, config.activationType);
+
+  // Get quote first
+  const quote = swapQuote(
+    pool,
+    config,
+    swapType === "sell",
+    new BN(inAmount.toString()),
+    slippageBps,
+    false,
+    currentPoint
+  );
+
+  // Build the swap transaction
+  const tx = await dbc.pool.swap({
+    pool: poolPubkey,
+    owner: userPubkey,
+    amountIn: new BN(inAmount.toString()),
+    minimumAmountOut: quote.minimumAmountOut,
+    swapBaseForQuote: swapType === "sell",
+    referralTokenAccount: null,
+  });
+
+  const { blockhash, lastValidBlockHeight } =
+    await connection.getLatestBlockhash();
+
+  let serialized: string;
+  if (tx instanceof VersionedTransaction) {
+    tx.message.recentBlockhash = blockhash;
+    serialized = Buffer.from(tx.serialize()).toString("base64");
+  } else {
+    tx.recentBlockhash = blockhash;
+    tx.lastValidBlockHeight = lastValidBlockHeight;
+    tx.feePayer = userPubkey;
+    serialized = tx
+      .serialize({ requireAllSignatures: false })
+      .toString("base64");
+  }
+
+  return {
+    transaction: serialized,
+    inAmount: inAmount.toString(),
+    outAmount: quote.outputAmount.toString(),
+    minOutAmount: quote.minimumAmountOut.toString(),
+  };
+}

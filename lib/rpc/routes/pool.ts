@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { getPoolPriceData, getSwapQuote } from "@/lib/meteora";
+import {
+  buildSwapTransaction,
+  getPoolPriceData,
+  getSwapQuote,
+} from "@/lib/meteora";
 import { publicProcedure } from "../procedures";
 
 const solanaAddressSchema = z.string().min(32).max(44);
@@ -48,5 +52,27 @@ export const poolRouter = {
         throw new Error("Failed to get swap quote");
       }
       return quote;
+    }),
+
+  /** Build a swap transaction for the user to sign */
+  buildSwap: publicProcedure
+    .input(
+      z.object({
+        poolAddress: solanaAddressSchema,
+        userWallet: solanaAddressSchema,
+        amount: z.string(), // Amount in lamports (for buy) or base tokens (for sell)
+        swapType: z.enum(["buy", "sell"]),
+        slippageBps: z.number().min(1).max(5000).default(100), // Default 1% slippage
+      })
+    )
+    .handler(async ({ input }) => {
+      const result = await buildSwapTransaction({
+        poolAddress: input.poolAddress,
+        userPublicKey: input.userWallet,
+        inAmount: BigInt(input.amount),
+        swapType: input.swapType,
+        slippageBps: input.slippageBps,
+      });
+      return result;
     }),
 };
