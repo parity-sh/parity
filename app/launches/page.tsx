@@ -4,6 +4,7 @@ import { PlusIcon, RocketIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { LaunchCard } from "@/components/launch-card";
+import { useSession } from "@/lib/auth-client";
 import { rpc } from "@/lib/rpc/client";
 
 interface Launch {
@@ -88,14 +89,19 @@ function LaunchesContent({
 }
 
 export default function LaunchesPage() {
+  const { data: session, isPending: isSessionLoading } = useSession();
+
   const {
     data: launches,
-    isLoading,
+    isLoading: isLaunchesLoading,
     error,
   } = useQuery({
     queryKey: ["launches"],
     queryFn: () => rpc.launch.list(),
+    enabled: !!session?.user,
   });
+
+  const isLoading = isSessionLoading || isLaunchesLoading;
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-8">
