@@ -9,6 +9,7 @@ import {
   ScalesIcon,
   ShieldCheckIcon,
 } from "@phosphor-icons/react/dist/ssr";
+import { Header } from "@/components/header";
 import { Badge } from "@/components/ui/badge";
 
 function ParityLogo({ className }: { className?: string }) {
@@ -26,47 +27,7 @@ function VerifiedBadge() {
 export default function Home() {
   return (
     <div className="min-h-screen bg-background font-sans text-foreground">
-      {/* Header */}
-      <header className="border-border border-b">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <div className="flex items-center gap-3">
-            <ParityLogo className="h-8 w-8 text-foreground" />
-            <span className="font-medium text-lg tracking-tight">Parity</span>
-          </div>
-          <nav className="hidden items-center gap-8 text-muted-foreground text-sm md:flex">
-            <a className="transition-colors hover:text-foreground" href="#fees">
-              Fees
-            </a>
-            <a
-              className="transition-colors hover:text-foreground"
-              href="#protocol"
-            >
-              Protocol
-            </a>
-            <a
-              className="transition-colors hover:text-foreground"
-              href="#verification"
-            >
-              Verification
-            </a>
-            <a
-              className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
-              href="https://github.com"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <GithubLogoIcon className="h-4 w-4" weight="bold" />
-              GitHub
-            </a>
-          </nav>
-          <button
-            className="h-10 bg-primary px-5 font-medium text-primary-foreground text-sm transition-colors hover:bg-primary/90"
-            type="button"
-          >
-            Launch App
-          </button>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero */}
       <section className="border-border border-b py-24 md:py-32">

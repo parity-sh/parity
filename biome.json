@@ -18,6 +18,10 @@
     "enabled": true,
     "rules": {
       "recommended": true,
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "off"
+      },
+
       "suspicious": {
         "noUnknownAtRules": "off"
       }
