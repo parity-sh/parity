@@ -321,7 +321,7 @@ function QuickBuy({
 
       {error && <p className="text-destructive text-sm">{error}</p>}
       {swapMutation.isSuccess && (
-        <div className="flex items-center gap-2 text-emerald-500 text-sm">
+        <div className="flex items-center gap-2 text-primary text-sm">
           <CheckCircleIcon className="size-4" weight="fill" />
           Swap successful!
         </div>
@@ -570,9 +570,9 @@ export function LaunchClient() {
                 className={cn(
                   "flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 font-medium text-sm",
                   isPending && "bg-muted text-muted-foreground",
-                  isActive && "bg-emerald-500/10 text-emerald-500",
+                  isActive && "bg-primary/10 text-primary",
                   launch.status === "migrated" &&
-                    "bg-blue-500/10 text-blue-500",
+                    "bg-primary/10 text-primary/70",
                   launch.status === "failed" &&
                     "bg-destructive/10 text-destructive"
                 )}
@@ -624,8 +624,8 @@ export function LaunchClient() {
                     className={cn(
                       "inline-flex items-center gap-1 px-2 py-1 font-mono text-sm",
                       priceChange >= 0
-                        ? "bg-emerald-500/10 text-emerald-500"
-                        : "bg-red-500/10 text-red-500"
+                        ? "bg-primary/10 text-primary"
+                        : "bg-destructive/10 text-destructive"
                     )}
                   >
                     {priceChange >= 0 ? (
@@ -646,7 +646,7 @@ export function LaunchClient() {
 
               {/* Live indicator */}
               <div className="mt-4 flex items-center gap-2 text-muted-foreground text-xs">
-                <span className="size-1.5 animate-pulse rounded-full bg-emerald-500" />
+                <span className="size-1.5 animate-pulse rounded-full bg-primary" />
                 Live price updates
               </div>
             </div>

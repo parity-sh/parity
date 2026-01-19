@@ -47,11 +47,11 @@ const STATUS_CONFIG = {
     icon: Clock,
     className: "text-muted-foreground",
   },
-  active: { label: "Live", icon: Rocket, className: "text-emerald-500" },
+  active: { label: "Live", icon: Rocket, className: "text-primary" },
   migrated: {
     label: "Migrated",
     icon: CheckCircle,
-    className: "text-blue-500",
+    className: "text-primary/70",
   },
   failed: { label: "Failed", icon: Warning, className: "text-destructive" },
 } as const;
@@ -227,7 +227,7 @@ function TokenCard({
             <div
               className={cn(
                 "flex items-center gap-1 font-mono text-sm",
-                isPositive ? "text-emerald-500" : "text-red-500"
+                isPositive ? "text-primary" : "text-destructive"
               )}
             >
               {isPositive ? (
@@ -309,7 +309,7 @@ export default function ExplorePage() {
         </div>
         {pricesData && pricesData.length > 0 && (
           <div className="flex items-center gap-2 text-muted-foreground text-sm">
-            <span className="size-2 animate-pulse rounded-full bg-emerald-500" />
+            <span className="size-2 animate-pulse rounded-full bg-primary" />
             Live prices
           </div>
         )}

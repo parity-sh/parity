@@ -2,40 +2,46 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
+import Link from "next/link";
 import { rpc } from "@/lib/rpc/client";
 
 function CoinItem({
+  id,
   symbol,
   image,
   price,
   liquiditySol,
 }: {
+  id: string;
   symbol: string;
   image: string | null;
   price: number;
   liquiditySol: number;
 }) {
   return (
-    <div className="flex shrink-0 items-center gap-2 px-4">
+    <Link
+      className="flex shrink-0 items-center gap-2.5 px-5 transition-colors hover:bg-muted/50"
+      href={`/${id}`}
+    >
       {image ? (
-        <div className="relative size-5 shrink-0 overflow-hidden rounded-full bg-muted">
+        <div className="relative size-6 shrink-0 overflow-hidden rounded-full bg-muted">
           <Image alt={symbol} className="object-cover" fill src={image} />
         </div>
       ) : (
-        <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted">
-          <span className="font-mono text-[10px] text-muted-foreground">
+        <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-muted">
+          <span className="font-mono text-muted-foreground text-xs">
             {symbol.slice(0, 1)}
           </span>
         </div>
       )}
-      <span className="font-medium font-mono text-sm">${symbol}</span>
-      <span className="font-mono text-muted-foreground text-xs">
+      <span className="font-mono font-semibold text-sm">${symbol}</span>
+      <span className="font-mono text-muted-foreground text-sm">
         {price.toFixed(6)} SOL
       </span>
       <span className="font-mono text-muted-foreground/60 text-xs">
-        {liquiditySol.toFixed(2)} liq
+        {liquiditySol.toFixed(1)} liq
       </span>
-    </div>
+    </Link>
   );
 }
 
@@ -50,7 +56,7 @@ export function CoinTicker() {
   if (isLoading) {
     return (
       <div className="border-border border-b bg-card/50">
-        <div className="flex h-10 items-center px-4 text-muted-foreground text-sm">
+        <div className="flex h-12 items-center px-4 text-muted-foreground text-sm">
           Loading...
         </div>
       </div>
@@ -60,7 +66,7 @@ export function CoinTicker() {
   if (coins.length === 0) {
     return (
       <div className="border-border border-b bg-card/50">
-        <div className="flex h-10 items-center px-4 text-muted-foreground text-sm">
+        <div className="flex h-12 items-center px-4 text-muted-foreground text-sm">
           No active launches yet
         </div>
       </div>
@@ -69,10 +75,11 @@ export function CoinTicker() {
 
   return (
     <div className="border-border border-b bg-card/50">
-      <div className="relative flex h-10 items-center overflow-hidden">
+      <div className="relative flex h-12 items-center overflow-hidden">
         <div className="flex animate-marquee">
           {coins.map((c, i) => (
             <CoinItem
+              id={c.id}
               image={c.image}
               key={`${c.symbol}-${i}`}
               liquiditySol={c.liquiditySol}
@@ -82,6 +89,7 @@ export function CoinTicker() {
           ))}
           {coins.map((c, i) => (
             <CoinItem
+              id={c.id}
               image={c.image}
               key={`${c.symbol}-dup-${i}`}
               liquiditySol={c.liquiditySol}
