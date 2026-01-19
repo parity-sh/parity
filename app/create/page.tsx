@@ -157,7 +157,7 @@ export default function CreatePage() {
         charityName: form.charityName.trim() || undefined,
       }),
     onSuccess: (data) => {
-      router.push(`/launch/${data.id}`);
+      router.push(`/${data.id}`);
     },
   });
 

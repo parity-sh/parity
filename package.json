@@ -14,6 +14,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@databuddy/sdk": "^2.3.27",
     "@hookform/resolvers": "^5.2.2",
     "@meteora-ag/dynamic-bonding-curve-sdk": "^1.5.1",
     "@orpc/client": "^1.13.4",

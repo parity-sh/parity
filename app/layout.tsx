@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Databuddy } from "@databuddy/sdk/react";
 import { AppShell } from "@/components/app-shell";
 import { Providers } from "@/components/providers";
 
@@ -30,6 +31,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Databuddy clientId={process.env.NEXT_PUBLIC_DATABUDDY_CLIENT_ID} />
         <Providers>
           <AppShell>{children}</AppShell>
         </Providers>
