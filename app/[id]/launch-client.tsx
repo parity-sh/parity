@@ -23,6 +23,7 @@ import {
   VersionedTransaction,
 } from "@solana/web3.js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -530,44 +531,78 @@ export function LaunchClient() {
       </Link>
 
       {/* Hero Section */}
-      <div className="mb-8">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="font-semibold text-3xl tracking-tight">
-              {launch.name}
-            </h1>
-            <p className="mt-1 font-mono text-muted-foreground text-xl">
-              ${launch.symbol}
-            </p>
+      <div className="mb-8 border border-border bg-card p-6">
+        <div className="flex gap-6">
+          {/* Token Image */}
+          <div className="shrink-0">
+            {launch.image ? (
+              <div className="relative size-24 overflow-hidden rounded-xl border border-border bg-muted">
+                <Image
+                  alt={launch.name}
+                  className="object-cover"
+                  fill
+                  src={launch.image}
+                />
+              </div>
+            ) : (
+              <div className="flex size-24 items-center justify-center rounded-xl border border-border bg-muted">
+                <span className="font-mono text-2xl text-muted-foreground">
+                  {launch.symbol.slice(0, 2)}
+                </span>
+              </div>
+            )}
           </div>
 
-          {/* Status Badge */}
-          <div
-            className={cn(
-              "flex items-center gap-2 px-3 py-1.5 font-medium text-sm",
-              isPending && "bg-muted text-muted-foreground",
-              isActive && "bg-emerald-500/10 text-emerald-500",
-              launch.status === "migrated" && "bg-blue-500/10 text-blue-500",
-              launch.status === "failed" && "bg-destructive/10 text-destructive"
+          {/* Token Info */}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h1 className="font-semibold text-2xl tracking-tight">
+                  {launch.name}
+                </h1>
+                <p className="mt-0.5 font-mono text-muted-foreground">
+                  ${launch.symbol}
+                </p>
+              </div>
+
+              {/* Status Badge */}
+              <div
+                className={cn(
+                  "flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 font-medium text-sm",
+                  isPending && "bg-muted text-muted-foreground",
+                  isActive && "bg-emerald-500/10 text-emerald-500",
+                  launch.status === "migrated" &&
+                    "bg-blue-500/10 text-blue-500",
+                  launch.status === "failed" &&
+                    "bg-destructive/10 text-destructive"
+                )}
+              >
+                {isPending && <ClockIcon className="size-4" weight="bold" />}
+                {isActive && <RocketIcon className="size-4" weight="bold" />}
+                {launch.status === "migrated" && (
+                  <CheckCircleIcon className="size-4" weight="bold" />
+                )}
+                {launch.status === "failed" && (
+                  <WarningIcon className="size-4" weight="bold" />
+                )}
+                <span className="capitalize">{launch.status}</span>
+              </div>
+            </div>
+
+            {launch.description && (
+              <p className="mt-3 line-clamp-2 text-muted-foreground text-sm">
+                {launch.description}
+              </p>
             )}
-          >
-            {isPending && <ClockIcon className="size-4" weight="bold" />}
-            {isActive && <RocketIcon className="size-4" weight="bold" />}
-            {launch.status === "migrated" && (
-              <CheckCircleIcon className="size-4" weight="bold" />
+
+            {/* Charity Badge */}
+            {launch.charityName && (
+              <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-primary text-sm">
+                <span className="font-medium">30% to {launch.charityName}</span>
+              </div>
             )}
-            {launch.status === "failed" && (
-              <WarningIcon className="size-4" weight="bold" />
-            )}
-            <span className="capitalize">{launch.status}</span>
           </div>
         </div>
-
-        {launch.description && (
-          <p className="mt-4 max-w-2xl text-muted-foreground">
-            {launch.description}
-          </p>
-        )}
       </div>
 
       {/* Main Content Grid */}

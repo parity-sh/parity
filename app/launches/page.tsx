@@ -13,6 +13,7 @@ interface Launch {
   symbol: string;
   status: "pending" | "active" | "migrated" | "failed";
   charityName: string | null;
+  tokenMint: string | null;
   createdAt: Date;
 }
 

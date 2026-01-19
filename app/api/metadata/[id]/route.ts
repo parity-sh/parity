@@ -5,6 +5,9 @@ import { launch } from "@/lib/db/auth-schema";
 
 const JSON_EXT_REGEX = /\.json$/;
 
+// Parity suffix added to all on-chain token symbols
+const PARITY_SYMBOL_SUFFIX = "ᴾ";
+
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -30,7 +33,7 @@ export async function GET(
 
   const metadata = {
     name: result.name,
-    symbol: result.symbol,
+    symbol: `${result.symbol}${PARITY_SYMBOL_SUFFIX}`,
     description: result.description || "",
     image: result.image || "",
   };

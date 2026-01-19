@@ -222,9 +222,10 @@ export const launchRouter = {
       }
 
       const uri = `https://parity.sh/api/metadata/${existing.id}.json`;
+      const onChainSymbol = `${existing.symbol}ᴾ`;
       const result = await buildCreatePoolTransaction({
         name: existing.name,
-        symbol: existing.symbol,
+        symbol: onChainSymbol,
         uri,
         curvePreset: existing.curvePreset,
         creatorPublicKey: input.creatorWallet,
