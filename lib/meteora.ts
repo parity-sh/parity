@@ -144,6 +144,7 @@ export interface PoolPriceData {
   baseMint: string;
   spotPrice: number;
   poolLiquiditySol: number;
+  totalSupply: number;
 }
 
 export async function getPoolPriceData(
@@ -168,13 +169,18 @@ export async function getPoolPriceData(
       TokenDecimal.NINE
     );
 
+    const connection = getConnection();
+    const supply = await connection.getTokenSupply(pool.baseMint);
+
     return {
       poolAddress,
       baseMint: pool.baseMint.toBase58(),
       spotPrice: price.toNumber(),
       poolLiquiditySol: lamportsToSol(pool.quoteReserve),
+      totalSupply: Number(supply.value.amount) / 10 ** supply.value.decimals,
     };
-  } catch {
+  } catch (error) {
+    console.error("Error fetching pool price data:", error);
     return null;
   }
 }

@@ -824,15 +824,25 @@ export function LaunchClient() {
                   <span className="text-muted-foreground text-sm">
                     Charity Wallet
                   </span>
-                  <button
-                    className="flex items-center gap-1 font-mono text-sm hover:text-primary"
-                    onClick={() => copyToClipboard(launch.charityWallet)}
-                    type="button"
-                  >
-                    {launch.charityWallet.slice(0, 4)}...
-                    {launch.charityWallet.slice(-4)}
-                    <CopyIcon className="size-3.5" />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      className="flex items-center gap-1 font-mono text-sm hover:text-primary"
+                      onClick={() => copyToClipboard(launch.charityWallet)}
+                      type="button"
+                    >
+                      {launch.charityWallet.slice(0, 4)}...
+                      {launch.charityWallet.slice(-4)}
+                      <CopyIcon className="size-3.5" />
+                    </button>
+                    <a
+                      href={`https://solscan.io/account/${launch.charityWallet}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      <ArrowSquareOutIcon className="size-3.5" />
+                    </a>
+                  </div>
                 </div>
                 {launch.poolAddress && (
                   <CopyableAddress

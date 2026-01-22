@@ -13,12 +13,13 @@ import { useMutation } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CHARITIES, CharitySelect } from "@/components/create/charity-select";
+import { CharitySelect } from "@/components/create/charity-select";
 import { FeeStructureInfo } from "@/components/create/fee-structure-info";
 // UI Components
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signIn, useSession } from "@/lib/auth-client";
+import { CHARITIES } from "@/lib/charities";
 import { rpc } from "@/lib/rpc/client";
 
 const CREATE_FORM_STORAGE_KEY = "parity_create_form_state";

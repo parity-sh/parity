@@ -9,28 +9,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
-export const CHARITIES = [
-  {
-    name: "Random Charity",
-    address: "random",
-    description: "We'll populate a random verified charity for you.",
-  },
-  {
-    name: "Aid for Ukraine",
-    address: "66pJhhESDjdeBBDdkKmxYYd7q6GUggYPWjxpMKNX39KV",
-    description: "Official Solana wallet for Ukraine aid.",
-  },
-  {
-    name: "Rainforest Foundation US",
-    address: "8r2EpKVHLf1ASuDtj2up8TDwjkTbHbDY94UcT7jcEQ1s",
-    description: "Protecting rainforests and indigenous rights.",
-  },
-  {
-    name: "Come Back Alive",
-    address: "8icxpGYCoR8SRKqLYsSarcAjBjBPuXAuHkeJjJx5ju7a",
-    description: "Support for the Ukrainian Army.",
-  },
-];
+import { CHARITIES } from "@/lib/charities";
 
 interface CharitySelectProps {
   value: string;

@@ -2,7 +2,7 @@ import { PublicKey } from "@solana/web3.js";
 import { and, desc, eq, isNotNull } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { launch } from "@/lib/db/auth-schema";
+import { launch, user } from "@/lib/db/auth-schema";
 import {
   buildCreatePoolTransaction,
   getPoolPriceData,
@@ -84,12 +84,14 @@ export const launchRouter = {
           status: z
             .enum(["pending", "active", "migrated", "failed"])
             .optional(),
+          sortBy: z.enum(["recent", "marketCap"]).default("recent"),
         })
         .optional()
     )
     .handler(async ({ input }) => {
       const conditions = input?.status ? [eq(launch.status, input.status)] : [];
-      return await db
+
+      const query = db
         .select({
           id: launch.id,
           name: launch.name,
@@ -104,11 +106,20 @@ export const launchRouter = {
           tokenMint: launch.tokenMint,
           createdAt: launch.createdAt,
           migratedAt: launch.migratedAt,
+          creator: {
+            id: user.id,
+            name: user.name,
+            image: user.image,
+          },
         })
         .from(launch)
+        .leftJoin(user, eq(launch.creatorId, user.id))
         .where(conditions.length > 0 ? and(...conditions) : undefined)
-        .orderBy(desc(launch.createdAt))
         .limit(input?.limit ?? 50);
+
+      // Note: marketCap sorting is usually handled client-side since it depends on live price data
+      // but for consistency we'll default to createdAt desc here.
+      return query.orderBy(desc(launch.createdAt));
     }),
 
   get: publicProcedure
