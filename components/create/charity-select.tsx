@@ -7,9 +7,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-
 import { CHARITIES } from "@/lib/charities";
+import { cn } from "@/lib/utils";
 
 interface CharitySelectProps {
   value: string;

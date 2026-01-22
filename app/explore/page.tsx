@@ -14,19 +14,15 @@ import {
   type TokenCardLaunch,
   type TokenCardPriceData,
 } from "@/components/token-card";
+import { getErrorMessage } from "@/lib/error-utils";
 import { rpc } from "@/lib/rpc/client";
 import { cn } from "@/lib/utils";
 
 type LaunchStatus = "pending" | "active" | "migrated" | "failed";
 
-interface PriceData {
-  poolAddress: string;
-  data: TokenCardPriceData | null;
-}
-
 export default function ExplorePage() {
   const [statusFilter, setStatusFilter] = useState<LaunchStatus | "all">("all");
-  const [sortBy, setSortBy] = useState<"recently" | "marketCap">("recently");
+  const [sortBy, setSortBy] = useState<"recent" | "marketCap">("recent");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const {
@@ -71,7 +67,9 @@ export default function ExplorePage() {
   }, [pricesData]);
 
   const sortedLaunches = useMemo(() => {
-    if (!launches) return [];
+    if (!launches) {
+      return [];
+    }
 
     const result = [...launches];
 
@@ -99,7 +97,7 @@ export default function ExplorePage() {
     return result;
   }, [launches, sortBy, sortOrder, priceMap]);
 
-  const handleSortToggle = (newSort: "recently" | "marketCap") => {
+  const handleSortToggle = (newSort: "recent" | "marketCap") => {
     if (newSort === sortBy) {
       setSortOrder(sortOrder === "desc" ? "asc" : "desc");
       return;
@@ -134,8 +132,17 @@ export default function ExplorePage() {
                 )}
                 key={s}
                 onClick={() => setStatusFilter(s)}
+                type="button"
               >
-                {s === "all" ? "All" : s === "active" ? "Live" : s}
+                {(() => {
+                  if (s === "all") {
+                    return "All";
+                  }
+                  if (s === "active") {
+                    return "Live";
+                  }
+                  return s.charAt(0).toUpperCase() + s.slice(1);
+                })()}
               </button>
             ))}
           </div>
@@ -145,17 +152,18 @@ export default function ExplorePage() {
           <button
             className={cn(
               "flex items-center gap-2 px-4 py-1.5 font-bold text-xs uppercase tracking-wider transition-all",
-              sortBy === "recently"
+              sortBy === "recent"
                 ? "rounded-md bg-background text-primary shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             )}
-            onClick={() => handleSortToggle("recently")}
+            onClick={() => handleSortToggle("recent")}
+            type="button"
           >
             Recently
             <CaretIcon
               className={cn(
                 "transition-transform",
-                sortBy !== "recently" && "opacity-40"
+                sortBy !== "recent" && "opacity-40"
               )}
               size={14}
               weight="bold"
@@ -169,6 +177,7 @@ export default function ExplorePage() {
                 : "text-muted-foreground hover:text-foreground"
             )}
             onClick={() => handleSortToggle("marketCap")}
+            type="button"
           >
             Market Cap
             <CaretIcon
@@ -185,11 +194,11 @@ export default function ExplorePage() {
 
       {/* Content */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {isLoading ? (
+        {isLoading &&
           [1, 2, 3, 4, 5].map((i) => (
             <div className="h-56 animate-pulse rounded-xl bg-muted" key={i} />
-          ))
-        ) : error ? (
+          ))}
+        {!isLoading && error && (
           <div className="col-span-full rounded-2xl border border-destructive/20 bg-destructive/5 p-12 text-center">
             <Warning
               className="mx-auto size-16 text-destructive"
@@ -199,12 +208,11 @@ export default function ExplorePage() {
               Failed to load launches
             </p>
             <p className="mt-1 text-destructive/70 text-sm">
-              {error instanceof Error
-                ? error.message
-                : "Please try again later"}
+              {getErrorMessage(error)}
             </p>
           </div>
-        ) : sortedLaunches.length === 0 ? (
+        )}
+        {!(isLoading || error) && sortedLaunches.length === 0 && (
           <div className="col-span-full rounded-3xl border-2 border-muted border-dashed py-20 text-center">
             <MagnifyingGlass
               className="mx-auto size-16 text-muted-foreground"
@@ -221,7 +229,9 @@ export default function ExplorePage() {
               Create Launch
             </Link>
           </div>
-        ) : (
+        )}
+        {!(isLoading || error) &&
+          sortedLaunches.length > 0 &&
           sortedLaunches.map((launch) => (
             <TokenCard
               key={launch.id}
@@ -232,8 +242,7 @@ export default function ExplorePage() {
                   : undefined
               }
             />
-          ))
-        )}
+          ))}
       </div>
     </div>
   );

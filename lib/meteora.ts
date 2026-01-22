@@ -179,8 +179,8 @@ export async function getPoolPriceData(
       poolLiquiditySol: lamportsToSol(pool.quoteReserve),
       totalSupply: Number(supply.value.amount) / 10 ** supply.value.decimals,
     };
-  } catch (error) {
-    console.error("Error fetching pool price data:", error);
+  } catch {
+    // Silently return null on error - caller should handle missing data
     return null;
   }
 }

@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signIn, useSession } from "@/lib/auth-client";
 import { CHARITIES } from "@/lib/charities";
+import { getErrorMessage } from "@/lib/error-utils";
 import { rpc } from "@/lib/rpc/client";
 
 const CREATE_FORM_STORAGE_KEY = "parity_create_form_state";
@@ -144,11 +145,12 @@ export default function CreatePage() {
     try {
       const { url } = await rpc.upload.image({ file });
       setImageUrl(url);
+      setErrors((prev) => ({ ...prev, image: undefined }));
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to upload image";
+      const message = getErrorMessage(err);
       setErrors((prev) => ({ ...prev, image: message }));
       setImagePreview(null);
+      setImageUrl(null);
     } finally {
       setIsUploading(false);
     }
@@ -195,6 +197,17 @@ export default function CreatePage() {
     onSuccess: (data) => {
       localStorage.removeItem(CREATE_FORM_STORAGE_KEY);
       router.push(`/${data.id}`);
+    },
+    onError: (error: Error) => {
+      // Error is displayed in the error banner below the form
+      // Also set field-specific errors if applicable
+      const message = getErrorMessage(error);
+      if (message.toLowerCase().includes("name")) {
+        setErrors((prev) => ({ ...prev, name: message }));
+      }
+      if (message.toLowerCase().includes("symbol")) {
+        setErrors((prev) => ({ ...prev, symbol: message }));
+      }
     },
   });
 
@@ -446,7 +459,7 @@ export default function CreatePage() {
                 Creation Failed
               </p>
               <p className="mt-1 text-destructive/90 text-sm">
-                {createMutation.error.message}
+                {getErrorMessage(createMutation.error)}
               </p>
             </div>
           </div>

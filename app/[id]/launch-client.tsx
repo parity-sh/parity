@@ -47,6 +47,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { useWalletBalance } from "@/hooks/use-wallet-balance";
+import { getErrorMessage } from "@/lib/error-utils";
 import { rpc } from "@/lib/rpc/client";
 import { getConnection } from "@/lib/solana";
 import { formatPrice, formatSol, solToLamports } from "@/lib/solana-utils";
@@ -234,7 +235,7 @@ function QuickBuy({
       queryClient.invalidateQueries({ queryKey: ["pool-price", poolAddress] });
       onSuccess?.();
     },
-    onError: (err) => setError(err.message),
+    onError: (err) => setError(getErrorMessage(err)),
   });
 
   const handleSwap = () => {
@@ -522,7 +523,7 @@ export function LaunchClient() {
       queryClient.invalidateQueries({ queryKey: ["launch", id] });
       queryClient.invalidateQueries({ queryKey: ["launches"] });
     },
-    onError: (err) => setDeployError(err.message),
+    onError: (err) => setDeployError(getErrorMessage(err)),
   });
 
   const handleDeploy = () => {
@@ -835,10 +836,10 @@ export function LaunchClient() {
                       <CopyIcon className="size-3.5" />
                     </button>
                     <a
+                      className="text-muted-foreground transition-colors hover:text-primary"
                       href={`https://solscan.io/account/${launch.charityWallet}`}
-                      target="_blank"
                       rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-primary transition-colors"
+                      target="_blank"
                     >
                       <ArrowSquareOutIcon className="size-3.5" />
                     </a>

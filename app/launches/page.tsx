@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { LaunchCard } from "@/components/launch-card";
 import { useSession } from "@/lib/auth-client";
+import { getErrorMessage } from "@/lib/error-utils";
 import { rpc } from "@/lib/rpc/client";
 
 interface Launch {
@@ -28,10 +29,10 @@ function LoadingSkeleton() {
   );
 }
 
-function ErrorDisplay({ error }: { error: Error }) {
+function ErrorDisplay({ error }: { error: unknown }) {
   return (
     <div className="border border-destructive/20 bg-destructive/5 p-6">
-      <p className="text-destructive text-sm">{error.message}</p>
+      <p className="text-destructive text-sm">{getErrorMessage(error)}</p>
     </div>
   );
 }
@@ -86,7 +87,7 @@ function LaunchesContent({
   isAuthenticated,
 }: {
   isLoading: boolean;
-  error: Error | null;
+  error: unknown;
   launches: Launch[];
   isAuthenticated: boolean;
 }) {
@@ -144,7 +145,7 @@ export default function LaunchesPage() {
       </div>
 
       <LaunchesContent
-        error={error as Error | null}
+        error={error}
         isAuthenticated={isAuthenticated}
         isLoading={isLoading}
         launches={(launches ?? []) as Launch[]}

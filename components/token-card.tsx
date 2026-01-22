@@ -84,25 +84,23 @@ function formatCompactNumber(num: number): string {
 function getStableMockChange(seed: string): number {
   let hash = 0;
   for (let i = 0; i < seed.length; i += 1) {
-    hash = (hash << 5) - hash + seed.charCodeAt(i);
-    hash |= 0;
+    // Simple hash function without bitwise operators
+    hash = hash * 31 + seed.charCodeAt(i);
+    // Keep hash in safe integer range
+    hash %= 2_147_483_647;
   }
 
-  const normalized = (hash >>> 0) / 0xff_ff_ff_ff;
+  // Normalize to 0-1 range
+  const normalized = Math.abs(hash) / 2_147_483_647;
   return (normalized - 0.4) * 20;
 }
 
 export interface TokenCardProps {
   launch: TokenCardLaunch;
   priceData?: TokenCardPriceData;
-  isFake?: boolean;
 }
 
-export function TokenCard({
-  launch,
-  priceData,
-  isFake = false,
-}: TokenCardProps) {
+export function TokenCard({ launch, priceData }: TokenCardProps) {
   const status = STATUS_CONFIG[launch.status];
   const StatusIcon = status.icon;
   const isActive = launch.status === "active";
@@ -193,7 +191,7 @@ export function TokenCard({
             <div className="flex items-center gap-4">
               <div className="flex min-w-0 flex-col items-center">
                 <span className="truncate font-bold font-mono text-lg leading-none tracking-tight">
-                  ${formatCompactNumber(isFake ? 67_000 : marketCap)}
+                  ${formatCompactNumber(marketCap)}
                 </span>
                 <span className="mt-1 font-bold text-[9px] text-muted-foreground uppercase tracking-widest opacity-60">
                   Market Cap
@@ -207,7 +205,7 @@ export function TokenCard({
               >
                 {priceChangeIcon}
                 <span className="sr-only">{priceChangeSrOnlyText}</span>
-                {Math.abs(isFake ? 4 : priceChange).toFixed(1)}%
+                {Math.abs(priceChange).toFixed(1)}%
               </div>
             </div>
           </div>
@@ -215,20 +213,7 @@ export function TokenCard({
       </div>
 
       <div className="mt-auto flex items-center justify-between border-border/50 border-t bg-black/5 p-3">
-        <button
-          className="z-10 flex cursor-pointer items-center gap-2 transition-opacity hover:opacity-80"
-          onClick={(e) => {
-            if (launch.creator?.id) {
-              e.stopPropagation();
-              e.preventDefault();
-              window.open(
-                `https://twitter.com/i/user/${launch.creator.id}`,
-                "_blank"
-              );
-            }
-          }}
-          type="button"
-        >
+        <div className="z-10 flex items-center gap-2">
           {launch.creator?.image ? (
             <div className="relative size-5 overflow-hidden rounded-full shadow-sm ring-1 ring-border/50">
               <Image
@@ -242,10 +227,10 @@ export function TokenCard({
               <User className="text-muted-foreground" size={10} />
             </div>
           )}
-          <span className="max-w-[80px] truncate font-medium text-[10px] text-muted-foreground transition-colors hover:text-foreground">
+          <span className="max-w-[80px] truncate font-medium text-[10px] text-muted-foreground">
             {launch.creator?.name || "Anonymous"}
           </span>
-        </button>
+        </div>
 
         {launch.charityName && (
           <div className="flex items-center gap-1.5 text-primary drop-shadow-sm">
@@ -274,10 +259,6 @@ export function TokenCard({
       ? "bg-gradient-to-br from-[#FF8C3D]/5 to-[#FF8C3D]/15"
       : "bg-card"
   );
-
-  if (isFake) {
-    return <div className={containerClassName}>{content}</div>;
-  }
 
   return (
     <Link

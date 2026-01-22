@@ -26,12 +26,13 @@ export const CHARITIES: Charity[] = [
     address: "8icxpGYCoR8SRKqLYsSarcAjBjBPuXAuHkeJjJx5ju7a",
     description: "Support for the Ukrainian Army.",
   },
-  {
-    name: "St. Jude",
-    address: "7166pJhhESDjdeBBDdkKmxYYd7q6GUggYPWjxpMKNX39K", // Placeholder/Search for official if needed
-    description: "St. Jude Children's Research Hospital.",
-    logoUrl: "/charities/st_jude.png",
-  },
+  // St. Jude - address needs verification before adding
+  // {
+  //   name: "St. Jude",
+  //   address: "TBD",
+  //   description: "St. Jude Children's Research Hospital.",
+  //   logoUrl: "/charities/st_jude.png",
+  // },
 ];
 
 export function getCharity(nameOrAddress: string): Charity | undefined {
